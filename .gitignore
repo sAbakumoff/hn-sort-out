@@ -39,3 +39,4 @@ secret
 
 # runners
 *.bat
+*.sh

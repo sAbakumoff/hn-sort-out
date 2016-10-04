@@ -1,0 +1,6 @@
+Segment &#x2013; Engineering | SF (local)<p>Segment is building the analytics routing layer for the world. We transform data into over 150 different services, adding new ones every day. We&#x2019;re processing billions of events each month, and maintaining the analytics infrastructure for companies like DigitalOcean, Zenefits, and Atlassian.</p><p>Where we&apos;re at:</p><p><pre><code>    - built with Go, Node, Kafka, Containers, NSQ, Redis, AWS
+    - just over 100 people, and growing actively
+    - we &lt;3 open source [1]
+</code></pre>
+If that sounds interesting, we&apos;d love to hear from you.</p><p>Apply: <a href="https://segment.com/jobs/" rel="nofollow">https://segment.com/jobs/</a></p><p>[1]: <a href="https://github.com/segmentio" rel="nofollow">https://github.com/segmentio</a><span>
+              </span></p>
