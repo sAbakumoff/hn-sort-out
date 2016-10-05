@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Who is hiring in ${time}</title>
+      <script type="text/javascript">
+        window.places = window.places || ${places}
+      </script>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript">
+          google.charts.load('upcoming', {mapsApiKey: "${mapsApiKey}",  'packages': ['map'] });
+          google.charts.setOnLoadCallback(drawMap);
+          function drawMap() {
+            var data = google.visualization.arrayToDataTable(${map_data});
+            var options = {
+              showTooltip: true,
+              showInfoWindow: true,
+              mapType : "normal",
+              enableScrollWheel : true
+            };
+            var map = new google.visualization.Map(document.getElementById('map'));
+            map.draw(data, options);
+            google.visualization.events.addListener(map, "select", function(ev){
+              var selection = map.getSelection();
+              if(selection && selection.length){
+                showPlace(data.getFormattedValue(selection[0].row, 2));
+              }
+            });
+          };
+          function showPlace(place){
+            if(place && window.places.hasOwnProperty(place)){
+              var content = '<h1>' + place + '</h1>' + '<ul>' +
+               window.places[place].map(function(item){
+                return '<li>' + item[1] + '</li>';
+              }).join('') + '</ul>';
+              document.getElementById('info').innerHTML = content;
+            }
+          }
+      </script>
+      <style>
+        #map{height : 600px;}
+      </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="info"></div>
+</body>
+</html>
