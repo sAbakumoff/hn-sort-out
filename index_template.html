@@ -5,45 +5,69 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>Who is hiring in ${time}</title>
       <script type="text/javascript">
-        window.places = window.places || ${places}
-      </script>
-      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-      <script type="text/javascript">
-          google.charts.load('upcoming', {mapsApiKey: "${mapsApiKey}",  'packages': ['map'] });
-          google.charts.setOnLoadCallback(drawMap);
-          function drawMap() {
-            var data = google.visualization.arrayToDataTable(${map_data});
-            var options = {
-              showTooltip: true,
-              showInfoWindow: true,
-              mapType : "normal",
-              enableScrollWheel : true
-            };
-            var map = new google.visualization.Map(document.getElementById('map'));
-            map.draw(data, options);
-            google.visualization.events.addListener(map, "select", function(ev){
-              var selection = map.getSelection();
-              if(selection && selection.length){
-                showPlace(data.getFormattedValue(selection[0].row, 2));
-              }
+        var map, listInfoWindow, detailsInfoWindow;
+        function initMap(){
+          map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 4,
+            mapTypeId: 'terrain',
+            center : { lat: 37.3875, lng: 122.0575}
+          });
+          listInfoWindow = new google.maps.InfoWindow();
+          detailsInfoWindow = new google.maps.InfoWindow({zIndex : 1000, pixelOffset : new google.maps.Size(20,0)});
+          initMarkers();
+        }
+        function initMarkers(){
+          ${map_data}.forEach(function(dataItem){
+            var marker = new google.maps.Marker({
+              position: {lat: dataItem[0], lng: dataItem[1]},
+              title : dataItem[2],
+              map: map
             });
-          };
-          function showPlace(place){
-            if(place && window.places.hasOwnProperty(place)){
-              var content = '<h1>' + place + '</h1>' + '<ul>' +
-               window.places[place].map(function(item){
-                return '<li>' + item[1] + '</li>';
-              }).join('') + '</ul>';
-              document.getElementById('info').innerHTML = content;
-            }
+            onClickInit(marker, dataItem);
+          });
+        }
+
+        var cache = {};
+        function getContent(data){
+          var  lat=data[0], lng = data[1], id=data[2], list=data[3];
+          if(!cache.hasOwnProperty(id)){
+            cache[id] = "<h1>" + id + "</h1>" +
+            "<ul>" + list.map(function(item){
+              return "<li>"+
+              "<a href='javascript:window.showJobPosition(" + lat + "," + lng + ',"' + item[0] + '"' + ")'>"  +
+              item[1] + "</a></li>";
+            }).join('') + "</ul>";
           }
+          return cache[id];
+        }
+        function showJobPosition(lat, lng, id){
+          detailsInfoWindow.setOptions({
+            content : "<iframe class='job-frame' src='data/10.16/contents/"+ id + ".html'>" + "</iframe>",
+            position : {lat : lat, lng : lng}
+          })
+          detailsInfoWindow.open(map);
+        }
+        function onClickInit(marker, data){
+          marker.addListener('click', function() {
+            listInfoWindow.setContent(getContent(data));
+            listInfoWindow.open(map, marker);
+          });
+        }
       </script>
       <style>
-        #map{height : 600px;}
+        html,body,#map{margin:0;padding:0;}
+        html,body{height:100%;}
+        #map{height : 100%;}
+        .job-frame{
+          width : 600px;
+          height : 400px;
+          border : none;
+        }
       </style>
 </head>
 <body>
   <div id="map"></div>
   <div id="info"></div>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap&key=${mapsApiKey}"></script>
 </body>
 </html>

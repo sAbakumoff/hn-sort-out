@@ -35,7 +35,7 @@ var templateFilepath = __dirname + "/index_template.html";
 var compiledFilePath = __dirname + "/10.16.html";
 
 var maxAddresses = 400; // max that Google Maps Can Display
-var googleVisData = [["lat", "lng", "place"]];
+var googleVisData = [];
 var addresses = Object.keys(places);
 Promise.resolve(0).then(function traverse(index){
   if(index === maxAddresses)
@@ -46,7 +46,7 @@ Promise.resolve(0).then(function traverse(index){
     var location = JSON.parse(response);
     if(location && location.results && location.results.length){
       var geom = location.results[0].geometry;
-      googleVisData.push([geom.location.lat, geom.location.lng, address]);
+      googleVisData.push([geom.location.lat, geom.location.lng, address, places[address]]);
     }
     return traverse(index + 1);
   }, function(err){
@@ -60,7 +60,6 @@ Promise.resolve(0).then(function traverse(index){
 .then(function fileRead(templateHtml){
   return templateHtml.replace("${map_data}", JSON.stringify(googleVisData))
   .replace("${time}", "October 2016")
-  .replace("${places}", JSON.stringify(places))
   .replace("${mapsApiKey}", mapsApiKey);
 }, console.log)
 .then(function htmlReady(compiledHtml){
